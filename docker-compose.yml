@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app-mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./app/db:/var/lib/mysql
+  app-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '9090:80'
+    depends_on:
+      - app-mysql
+    environment:
+      PMA_HOST: app-mysql
+      MYSQL_ROOT_PASSWORD: 'password'
+  app-php-cli:
+    build:
+      context: ./app/docker
+      dockerfile: php-cli.docker
+    volumes:
+      - ./app:/app
+
+volumes:
+  db:
